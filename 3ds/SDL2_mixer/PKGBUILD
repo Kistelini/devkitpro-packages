@@ -1,0 +1,52 @@
+pkgname=3ds-SDL2_mixer
+pkgver=2.6.3
+pkgrel=1
+pkgdesc="Version 2 of a simple multi-channel audio mixer (Nintendo 3DS port)"
+arch=('any')
+url="https://libsdl.org/"
+license=('MIT')
+groups=('3ds-portlibs' '3ds-sdl2-libs')
+depends=(
+    '3ds-flac'
+    '3ds-libmodplug'
+    '3ds-libvorbisidec'
+    '3ds-mpg123'
+    '3ds-opusfile'
+    '3ds-SDL2'
+)
+makedepends=(
+    '3ds-pkg-config'
+    'dkp-toolchain-vars'
+)
+options=(!strip libtool staticlibs)
+source=("https://github.com/libsdl-org/SDL_mixer/releases/download/release-$pkgver/SDL2_mixer-$pkgver.tar.gz"
+    "fix.patch")
+sha256sums=('7a6ba86a478648ce617e3a5e9277181bc67f7ce9876605eea6affd4a0d6eea8f'
+            'ab9c32fb6b35faf55a554978f1e07ef7e7efebee74ec8c688ba68d8a54985ab7')
+
+build() {
+    source /opt/devkitpro/3dsvars.sh
+
+    cd SDL2_mixer-$pkgver
+    patch -Np0 -i ../fix.patch
+    # doesn't build with cmake
+    ./configure \
+        --prefix="$PORTLIBS_PREFIX" \
+        --host=arm-none-eabi \
+        --disable-shared \
+        --enable-static \
+        --enable-music-ogg-tremor \
+        --enable-music-flac-libflac \
+        --enable-music-mp3-mpg123 \
+        --disable-music-ogg-stb \
+        --disable-music-flac-drflac \
+        --disable-music-mp3-drmp3
+    make
+
+}
+
+package() {
+    source /opt/devkitpro/3dsvars.sh
+
+    make -C SDL2_mixer-$pkgver DESTDIR="$pkgdir" install
+}

@@ -1,0 +1,11 @@
+--- Makefile.in.orig	2023-10-24 16:22:13.930563565 +0200
++++ Makefile.in	2023-10-24 16:22:30.290867187 +0200
+@@ -80,7 +80,7 @@
+ LT_EXTRA    = @LT_EXTRA@
+ LT_LDFLAGS  = -no-undefined -rpath $(libdir) -release $(LT_RELEASE) -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) $(LT_EXTRA)
+ 
+-all: $(srcdir)/configure Makefile $(objects)/$(TARGET) $(objects)/playwave$(EXE) $(objects)/playmus$(EXE)
++all: $(srcdir)/configure Makefile $(objects)/$(TARGET)
+ 
+ $(srcdir)/configure: $(srcdir)/configure.ac
+ 	@echo "Warning, configure is out of date, please re-run autogen.sh"
