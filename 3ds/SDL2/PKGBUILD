@@ -1,0 +1,33 @@
+pkgname=3ds-SDL2
+pkgver=2.28.4
+pkgrel=1
+pkgdesc="Version 2 of a library for portable low-level access to a video framebuffer, audio output, mouse, and keyboard (Nintendo 3DS port)"
+arch=('any')
+url="https://libsdl.org/"
+license=('MIT')
+groups=('3ds-portlibs' '3ds-sdl2-libs')
+makedepends=(
+    '3ds-pkg-config'
+    'cmake'
+    'dkp-toolchain-vars'
+)
+options=(!strip libtool staticlibs)
+source=("https://github.com/libsdl-org/SDL/releases/download/release-$pkgver/SDL2-$pkgver.tar.gz")
+sha256sums=('888b8c39f36ae2035d023d1b14ab0191eb1d26403c3cf4d4d5ede30e66a4942c')
+
+build() {
+    source /opt/devkitpro/3dsvars.sh
+
+    cmake \
+        -S SDL2-$pkgver \
+        -B build \
+        -DCMAKE_TOOLCHAIN_FILE="$DEVKITPRO/cmake/3DS.cmake" \
+        -DCMAKE_BUILD_TYPE=Release
+    cmake --build build
+}
+
+package() {
+    source /opt/devkitpro/3dsvars.sh
+
+    DESTDIR="$pkgdir" cmake --install build
+}
