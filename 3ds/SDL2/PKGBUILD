@@ -1,0 +1,38 @@
+pkgname=3ds-SDL2
+pkgver=2.32.10
+pkgrel=1
+pkgdesc="Simple DirectMedia Layer version 2 (Nintendo 3DS port)"
+arch=('any')
+url="https://libsdl.org/"
+license=('MIT')
+groups=('3ds-portlibs' '3ds-sdl2-libs')
+makedepends=(
+    '3ds-pkg-config'
+    'cmake'
+    'dkp-toolchain-vars'
+)
+options=(!strip libtool staticlibs)
+source=("https://github.com/libsdl-org/SDL/releases/download/release-$pkgver/SDL2-$pkgver.tar.gz"
+        "accel.patch")
+sha256sums=('5f5993c530f084535c65a6879e9b26ad441169b3e25d789d83287040a9ca5165'
+            'fc2f141c413880320b75d109b69d9a930ce5ee7bb06c8d5fcbe89111371544cf')
+
+prepare() {
+    cd SDL2-$pkgver
+    patch -Np1 -i "$srcdir/accel.patch"
+}
+
+build() {
+    source /opt/devkitpro/3dsvars.sh
+
+    cmake \
+        -S SDL2-$pkgver \
+        -B build \
+        -DCMAKE_TOOLCHAIN_FILE="$DEVKITPRO/cmake/3DS.cmake" \
+        -DCMAKE_BUILD_TYPE=Release
+    cmake --build build
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+}
