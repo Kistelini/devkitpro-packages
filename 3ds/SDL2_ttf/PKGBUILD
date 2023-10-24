@@ -1,0 +1,40 @@
+pkgname=3ds-SDL2_ttf
+pkgver=2.20.2
+pkgrel=1
+pkgdesc="Version 2 of a library that allows you to use TrueType fonts in your SDL applications (Nintendo 3DS port)"
+arch=('any')
+url="https://github.com/libsdl-org/SDL_ttf"
+license=('MIT')
+groups=('3ds-portlibs' '3ds-sdl2-libs')
+depends=(
+    '3ds-freetype'
+    '3ds-SDL2'
+)
+makedepends=(
+    '3ds-pkg-config'
+    'dkp-toolchain-vars'
+)
+options=(!strip libtool staticlibs)
+source=("https://github.com/libsdl-org/SDL_ttf/releases/download/release-$pkgver/SDL2_ttf-$pkgver.tar.gz")
+sha256sums=('9dc71ed93487521b107a2c4a9ca6bf43fb62f6bddd5c26b055e6b91418a22053')
+
+build() {
+    source /opt/devkitpro/3dsvars.sh
+
+    cd SDL2_ttf-$pkgver
+    sed '/^noinst_PROGRAMS/d' -i Makefile.in
+    # doesn't build with cmake
+    ./configure \
+        --prefix="$PORTLIBS_PREFIX" \
+        --host=arm-none-eabi \
+        --disable-shared \
+        --enable-static \
+        --disable-harfbuzz
+    make
+}
+
+package() {
+    source /opt/devkitpro/3dsvars.sh
+
+    make -C SDL2_ttf-$pkgver DESTDIR="$pkgdir" install
+}
