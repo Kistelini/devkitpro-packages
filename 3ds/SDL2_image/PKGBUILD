@@ -1,0 +1,39 @@
+pkgname=3ds-SDL2_image
+pkgver=2.6.3
+pkgrel=1
+pkgdesc="Version 2 of a simple library to load images of various formats as SDL surfaces (Nintendo 3DS port)"
+arch=('any')
+url="https://libsdl.org/"
+license=('MIT')
+groups=('3ds-portlibs' '3ds-sdl2-libs')
+depends=(
+    '3ds-libjpeg-turbo'
+    '3ds-libpng'
+    '3ds-SDL2'
+)
+makedepends=(
+    '3ds-pkg-config'
+    'cmake'
+    'dkp-toolchain-vars'
+)
+options=(!strip libtool staticlibs)
+source=("https://github.com/libsdl-org/SDL_image/releases/download/release-$pkgver/SDL2_image-$pkgver.tar.gz")
+sha256sums=('931c9be5bf1d7c8fae9b7dc157828b7eee874e23c7f24b44ba7eff6b4836312c')
+
+build() {
+    source /opt/devkitpro/3dsvars.sh
+
+    cmake \
+        -S SDL2_image-$pkgver \
+        -B build \
+        -DCMAKE_TOOLCHAIN_FILE="$DEVKITPRO/cmake/3DS.cmake" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DSDL2IMAGE_BACKEND_STB=OFF
+    cmake --build build
+}
+
+package() {
+    source /opt/devkitpro/3dsvars.sh
+
+    DESTDIR="$pkgdir" cmake --install build
+}
