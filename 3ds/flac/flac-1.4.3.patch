@@ -1,0 +1,56 @@
+diff -Naur flac-1.4.3.orig/include/share/compat.h flac-1.4.3/include/share/compat.h
+--- flac-1.4.3.orig/include/share/compat.h	2023-06-15 11:52:54.146861252 +0200
++++ flac-1.4.3/include/share/compat.h	2023-10-25 12:30:03.690265871 +0200
+@@ -191,17 +191,27 @@
+ #define flac_vfprintf vfprintf
+ 
+ #define flac_fopen fopen
+-#define flac_chmod chmod
+ #define flac_unlink unlink
+ #define flac_rename rename
+ #define flac_stat stat
+ 
++#ifdef __3DS__
++#define flac_chmod(a, b) printf("flac_chmod: not implemented\n")
++#define chown(a, b, c) printf("flac_chown: not implemented\n")
++#else
++ #define flac_chmod chmod
++#endif
++
++#ifdef __3DS__
++#define flac_utime(a, b) printf("flac_utime: not implemented\n")
++#else
+ #if defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE >= 200809L)
+ #define flac_utime(a, b) utimensat (AT_FDCWD, a, *b, 0)
+ #else
+ #define flac_utime utime
+ #endif
+ #endif
++#endif
+ 
+ #ifdef _WIN32
+ #define flac_stat_s __stat64 /* stat struct */
+diff -Naur flac-1.4.3.orig/Makefile.in flac-1.4.3/Makefile.in
+--- flac-1.4.3.orig/Makefile.in	2023-06-22 10:50:44.205745737 +0200
++++ flac-1.4.3/Makefile.in	2023-10-25 12:31:21.648810925 +0200
+@@ -396,7 +396,7 @@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+ ACLOCAL_AMFLAGS = -I m4
+-SUBDIRS = doc include m4 man src test microbench oss-fuzz \
++SUBDIRS = include m4 src test microbench oss-fuzz \
+ 	$(am__append_1)
+ EXTRA_DIST = \
+ 	CMakeLists.txt \
+diff -Naur flac-1.4.3.orig/src/Makefile.in flac-1.4.3/src/Makefile.in
+--- flac-1.4.3.orig/src/Makefile.in	2023-06-22 10:50:44.605747092 +0200
++++ flac-1.4.3/src/Makefile.in	2023-10-25 12:31:55.452947079 +0200
+@@ -180,7 +180,7 @@
+   unique=`for i in $$list; do \
+     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+   done | $(am__uniquify_input)`
+-DIST_SUBDIRS = libFLAC share flac metaflac test_grabbag \
++DIST_SUBDIRS = libFLAC share test_grabbag \
+ 	test_libs_common test_libFLAC test_seeking test_streams utils \
+ 	libFLAC++ test_libFLAC++
+ am__DIST_COMMON = $(srcdir)/Makefile.in
