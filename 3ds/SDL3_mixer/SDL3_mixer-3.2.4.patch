@@ -1,0 +1,12 @@
+diff --git a/examples/CMakeLists.txt b/examples/CMakeLists.txt
+index 2fade80..ee5e173 100644
+--- a/examples/CMakeLists.txt
++++ b/examples/CMakeLists.txt
+@@ -112,7 +112,6 @@ macro(add_sdlmixer_example_executable TARGET)
+             NAME "SDL-${TARGET}"
+             DESCRIPTION "SDL3 example application"
+             AUTHOR "SDL3 Contributors"
+-            ICON "${CMAKE_CURRENT_SOURCE_DIR}/../test/n3ds/logo48x48.png"
+         )
+         ctr_create_3dsx(
+             ${TARGET}

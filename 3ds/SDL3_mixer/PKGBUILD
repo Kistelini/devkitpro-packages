@@ -1,0 +1,55 @@
+pkgname=3ds-SDL3_mixer
+pkgver=3.2.4
+pkgrel=1
+pkgdesc="Audio mixer that supports various file formats for SDL3 (Nintendo 3DS port)"
+arch=('any')
+url="https://libsdl.org/"
+license=('MIT')
+groups=('3ds-portlibs' '3ds-sdl3-libs')
+depends=(
+    '3ds-flac'
+    '3ds-libvorbisidec'
+    '3ds-mpg123'
+    '3ds-opusfile'
+    '3ds-SDL3'
+    '3ds-libxmp'
+)
+makedepends=(
+    '3ds-pkg-config'
+    'cmake'
+    'dkp-toolchain-vars'
+)
+options=(!strip libtool staticlibs)
+source=("https://github.com/libsdl-org/SDL_mixer/releases/download/release-$pkgver/SDL3_mixer-$pkgver.tar.gz"
+    "SDL3_mixer-3.2.4.patch")
+sha256sums=('182a07c745375e113dc740d43964ff21b0be29f29f59876c4dbc4db3d32f6901'
+            'a2c59f5fdb05b8ba3f96fde76431733f6119171ce4eab808359ba96016cadbea')
+
+prepare() {
+    cd SDL3_mixer-$pkgver
+    patch -Np1 -i "$srcdir/3ds.patch"
+}
+
+build() {
+    source /opt/devkitpro/3dsvars.sh
+
+    arm-none-eabi-cmake \
+        -S SDL3_mixer-$pkgver \
+        -B build \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DSDLMIXER_DEPS_SHARED=OFF \
+        -DSDLMIXER_FLAC_DRFLAC=OFF \
+        -DSDLMIXER_FLAC_LIBFLAC=ON \
+        -DSDLMIXER_MIDI=OFF \
+        -DSDLMIXER_MOD_XMP=ON \
+        -DSDLMIXER_MP3_DRMP3=OFF \
+        -DSDLMIXER_MP3_MPG123=ON \
+        -DSDLMIXER_VORBIS_TREMOR=ON \
+        -DSDLMIXER_VORBIS_VORBISFILE=OFF \
+        -DSDLMIXER_WAVPACK=OFF
+    cmake --build build
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+}
