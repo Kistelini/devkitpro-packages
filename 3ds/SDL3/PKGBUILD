@@ -1,0 +1,30 @@
+pkgname=3ds-SDL3
+pkgver=3.4.20
+pkgrel=1
+pkgdesc="Simple DirectMedia Layer version 3 (Nintendo 3DS port)"
+arch=('any')
+url="https://libsdl.org/"
+license=('MIT')
+groups=('3ds-portlibs' '3ds-sdl3-libs')
+makedepends=(
+    '3ds-pkg-config'
+    'cmake'
+    'dkp-toolchain-vars'
+)
+options=(!strip libtool staticlibs)
+source=("https://github.com/libsdl-org/SDL/releases/download/release-$pkgver/SDL3-$pkgver.tar.gz")
+sha256sums=('f3bb06f55bed9557227a700af2ea62e49497ebdf58037732a731a5fb3ef8581f')
+
+build() {
+    source /opt/devkitpro/3dsvars.sh
+
+    arm-none-eabi-cmake \
+        -S SDL3-$pkgver \
+        -B build \
+        -DCMAKE_BUILD_TYPE=Release
+    cmake --build build
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+}
